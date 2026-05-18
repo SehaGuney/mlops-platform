@@ -1,0 +1,20 @@
+version: "3.9"
+
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - model-storage:/app/models
+    depends_on:
+      - model-store
+
+  model-store:
+    image: python:3.11-slim
+    volumes:
+      - model-storage:/data
+    command: ["sh", "-c", "echo 'Model storage hazır' && tail -f /dev/null"]
+
+volumes:
+  model-storage:

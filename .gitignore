@@ -1,0 +1,16 @@
+# En kritik yer: infra altındaki terraform klasörünü gizle
+infra/.terraform/
+infra/*.tfstate
+infra/*.tfstate.*
+infra/.terraform.lock.hcl
+
+# VS Code geçmiş yedeklerini gizle
+.history/
+
+# Python sanal ortamlarını gizle
+venv/
+**/__pycache__/
+*.pyc
+
+# Mac sistem dosyası
+.DS_Store
