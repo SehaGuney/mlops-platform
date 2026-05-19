@@ -7,6 +7,10 @@ app = FastAPI(title="MLOPS Platform - Week 1")
 model = joblib.load("app/models/model.pkl")
 labels = ["setosa", "versicolor", "virginica"]
 
+@app.get("/health")
+def health_check():
+    return {"status":"healthy"}
+
 class PredictRequest(BaseModel):
     features: list[float]
 
