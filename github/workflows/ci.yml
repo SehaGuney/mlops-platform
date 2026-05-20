@@ -1,0 +1,48 @@
+name: CI/CD Pipeline
+
+on: 
+  push:
+    branches: [main]
+
+jobs:
+  test-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set Up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      
+      - name: Install Dependencies
+        run: pip install -r requirements.txt pytest httpx
+
+      - name: Train model
+        run: python3 app/train.py
+
+      - name: Run Test
+        run: pytest tests/ -v
+
+      - name: Configure AWS Credentials 
+        uses: aws-actions/configure-aws-credentials@v4
+        with: 
+          aws-access-key-id: ${{secrets.AWS_ACCESS_KEY_ID}}
+          aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+          aws-region: eu-central-1
+
+      - name: Login to ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push Docker Image
+        env: 
+          ECR_REGISTERY: ${{steps.login-ecr.outputs.registery}}
+          IMAGE_TAG: ${{github.sha}}
+        run: |
+          docker build -t $ECR_REGISTERY/mlops-platform-api:$IMAGE_TAG .
+          docker build -t $ECR_REGISTERY/mlops-platform-api:latest .
+          docker push $ECR_REGISTRY/mlops-platform-api:$IMAGE_TAG
+          docker push $ECR_REGISTRY/mlops-platform-api:latest
