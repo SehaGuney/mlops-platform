@@ -1,3 +1,3 @@
-region = "eu-central-1"
+region       = "eu-central-1"
 project_name = "mlops-platform"
-environment= "dev"
+environment  = "dev"

@@ -1,4 +1,10 @@
 terraform {
+  backend "s3" {
+    bucket = "mlops-platform-models-dev"
+    key    = "terraform/state.tfstate"
+    region = "eu-central-1"
+  }
+
     required_providers {
       aws = {
         source  = "hashicorp/aws"
@@ -140,7 +146,11 @@ resource "aws_instance" "api" {
 }
 
 resource "aws_eip" "api" {
-  instance = aws_instance.api.id
   domain = "vpc"
   tags = {Name = "${var.project_name}-eip"}
+}
+
+resource "aws_eip_association" "eip_assoc" {
+  instance_id = aws_instance.api.id
+  allocation_id = aws_eip.api.id
 }
